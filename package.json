@@ -15,7 +15,11 @@
     "lint": "eslint .",
     "typecheck": "npm run typecheck --workspaces",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "db:generate": "npm run db:generate --workspace backend",
+    "db:migrate": "npm run db:migrate --workspace backend",
+    "db:seed": "npm run db:seed --workspace backend",
+    "db:studio": "npm run db:studio --workspace backend"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

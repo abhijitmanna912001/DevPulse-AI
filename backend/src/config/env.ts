@@ -9,7 +9,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().optional(),
   FRONTEND_URL: z.string().url().default('http://localhost:5173'),
   OPENAI_API_KEY: z.string().optional(),
-  DEMO_USER_ID: z.string().default('default-demo-user'),
+  DEMO_USER_ID: z.string().uuid().default('00000000-0000-4000-8000-000000000001'),
 });
 
 export const env = envSchema.parse(process.env);

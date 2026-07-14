@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  SOFTWARE_ENGINEER
+  STUDENT
+  COMPETITIVE_PROGRAMMER
+  REMOTE_DEVELOPER
+  FOUNDER
+  FREELANCER
+  OTHER
+}
+
+enum RiskLevel {
+  LOW
+  MODERATE
+  HIGH
+  CRITICAL
+}
+
+enum InsightPeriod {
+  DAILY
+  WEEKLY
+}
+
+enum AiMessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+model User {
+  id               String            @id @default(uuid()) @db.Uuid
+  displayName      String
+  demoKey          String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  profile          UserProfile?
+  wellnessEntries  WellnessEntry[]
+  insightSnapshots InsightSnapshot[]
+  aiConversations  AiConversation[]
+}
+
+model UserProfile {
+  id                  String   @id @default(uuid()) @db.Uuid
+  userId              String   @unique @db.Uuid
+  role                UserRole
+  typicalWorkSchedule String?
+  wellnessGoals       String?
+  preferredSleepHours Decimal? @db.Decimal(4, 2)
+  preferredDailySteps Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WellnessEntry {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @db.Uuid
+  entryDate       DateTime @db.Date
+  sleepHours      Decimal? @db.Decimal(4, 2)
+  sleepQuality    Int?     @db.SmallInt
+  steps           Int?
+  exerciseMinutes Int?
+  moodScore       Int?     @db.SmallInt
+  energyScore     Int?     @db.SmallInt
+  workHours       Decimal? @db.Decimal(4, 2)
+  codingMinutes   Int?
+  breakCount      Int?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entryDate])
+  @@index([userId, entryDate(sort: Desc)])
+}
+
+model InsightSnapshot {
+  id                String        @id @default(uuid()) @db.Uuid
+  userId            String        @db.Uuid
+  period            InsightPeriod
+  periodStart       DateTime      @db.Date
+  periodEnd         DateTime      @db.Date
+  recoveryScore     Int           @db.SmallInt
+  burnoutRiskScore  Int           @db.SmallInt
+  riskLevel         RiskLevel
+  summary           String
+  recommendedAction String
+  createdAt         DateTime      @default(now())
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period, periodStart, periodEnd])
+  @@index([userId, period, periodStart])
+}
+
+model AiConversation {
+  id        String      @id @default(uuid()) @db.Uuid
+  userId    String      @db.Uuid
+  title     String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  AiMessage[]
+
+  @@index([userId, updatedAt(sort: Desc)])
+}
+
+model AiMessage {
+  id             String         @id @default(uuid()) @db.Uuid
+  conversationId String         @db.Uuid
+  role           AiMessageRole
+  content        String
+  createdAt      DateTime       @default(now())
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
