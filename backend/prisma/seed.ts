@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { env } from '../src/config/env.js';
+import { prisma } from '../src/db/prisma.js';
 
-const prisma = new PrismaClient();
-
-const demoUserId = process.env.DEMO_USER_ID ?? '00000000-0000-4000-8000-000000000001';
+const demoUserId = env.DEMO_USER_ID;
 const demoKey = 'default-demo-user';
 
 function day(value: string) {
