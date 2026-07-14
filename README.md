@@ -27,3 +27,11 @@ Rather than only displaying raw metrics, DevPulse AI explains trends in plain la
 ## Documentation
 
 - [Product Requirements Document](docs/PRD.md)
+
+## Live Demo
+
+🌐 Frontend:
+https://dev-pulse-ai-frontend.vercel.app
+
+⚙️ Backend API:
+https://devpulse-ai-q6ip.onrender.com/api/v1/health
