@@ -1,9 +1,12 @@
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import morgan from 'morgan';
 
 import { env } from './config/env.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { notFoundHandler } from './middleware/notFound.js';
+import { requestLogger } from './middleware/requestLogger.js';
+import { apiRouter } from './routes/index.js';
 
 export const app = express();
 
@@ -14,14 +17,9 @@ app.use(
   }),
 );
 app.use(express.json());
-app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(requestLogger);
 
-app.use((_req, res) => {
-  res.status(404).json({
-    success: false,
-    error: {
-      code: 'NOT_FOUND',
-      message: 'No API routes have been implemented yet.',
-    },
-  });
-});
+app.use('/api/v1', apiRouter);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
